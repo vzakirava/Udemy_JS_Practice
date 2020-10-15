@@ -25,11 +25,11 @@
 
 // 1)
 
-let numberOfFIlms = prompt('Сколько фильмов вы уже посмотрели?', '');
+let numberOfFIlms = +prompt('Сколько фильмов вы уже посмотрели?', '');
 
 // 2)
 
-let personalMovieDB = {
+const personalMovieDB = {
     count: numberOfFIlms,
     movies: {},
     actors: {},
@@ -37,14 +37,14 @@ let personalMovieDB = {
     privat: false
 };
 
-// 3)
+// 3) 
 
 let currentFilm = prompt('Один из последних просмотренных фильмов?', '');
-let currentFilmRating = prompt('На сколько оцените его?', '');
+let currentFilmRating = +prompt('На сколько оцените его?', '');
 
 personalMovieDB.movies[currentFilm] = currentFilmRating;
 
 currentFilm = prompt('Один из последних просмотренных фильмов?', '');
-currentFilmRating = prompt('На сколько оцените его?', '');
+currentFilmRating = +prompt('На сколько оцените его?', '');
 
 personalMovieDB.movies[currentFilm] = currentFilmRating;
