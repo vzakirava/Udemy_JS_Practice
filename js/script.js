@@ -20,7 +20,56 @@ const movieDB = {
         "Лига справедливости",
         "Ла-ла лэнд",
         "Одержимость",
-        "Скотт Пилигрим против..."
+        "Скотт Пилигрим против...",
+        "Базинга",
+        "Пепе на тропе"
     ]
 };
 
+removeAds();
+
+changePromoGenreTo('драма');
+
+changePromoBackgroundTo('bg.jpg');
+
+updateMovieList();
+
+function changePromoBackgroundTo(image) {
+    document.querySelector('.promo__bg').style.backgroundImage = `url(img/${image})`;
+}
+
+function changePromoGenreTo(genre) {
+    document.querySelector('.promo__genre').textContent = genre;
+}
+
+function removeAds() {
+    const adsBlocks = document.querySelectorAll('.promo__adv');
+
+    adsBlocks.forEach(item => {
+        item.innerHTML = '';
+    });
+}
+
+function updateMovieList() {
+    const movieList = document.querySelector('.promo__interactive-list');
+    movieList.innerHTML = '';
+
+    movieDB.movies.sort();
+    
+    movieDB.movies.forEach((item, i) => {
+        // Первоначальный вариант решения
+        // const movie = document.createElement('li');
+
+        // movie.classList.add('promo__interactive-item');
+        // movie.innerHTML = `${i + 1} ${item} <div class="delete"></div>`;
+
+        // movieList.append(movie);
+
+        // Менее трудоёмкий вариант решения
+        movieList.innerHTML += `
+            <li class="promo__interactive-item">${i + 1} ${item}
+                <div class="delete"></div>
+            </li>
+        `;
+    });
+}
