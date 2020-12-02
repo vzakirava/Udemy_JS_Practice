@@ -85,12 +85,21 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (t.total <= 0) {
                 clearInterval(timeInterval);
+                nullClock();
+                return;
             }
 
             days.textContent = addZero(t.days);
             hours.textContent = addZero(t.hours);
             minutes.textContent = addZero(t.minutes);
             seconds.textContent = addZero(t.seconds);
+        }
+
+        function nullClock() {
+            days.textContent = addZero(0);
+            hours.textContent = addZero(0);
+            minutes.textContent = addZero(0);
+            seconds.textContent = addZero(0);
         }
     }
 });
