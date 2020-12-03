@@ -39,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+
     // Timer
 
     const deadline = '2020-12-01';
@@ -46,6 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setClock('.timer', deadline);
 
     function getRemainingTime(endTime) {
+        
         const t = Date.parse(endTime) - Date.parse(new Date()),
               days = Math.floor(t / (1000 * 60 * 60 * 24)),     // t / мс в одном дне
               hours = Math.floor((t / (1000 * 60 * 60)) % 24),
@@ -101,5 +103,46 @@ document.addEventListener('DOMContentLoaded', () => {
             minutes.textContent = addZero(0);
             seconds.textContent = addZero(0);
         }
+    }
+
+
+    // Modal
+
+    const modal = document.querySelector('.modal'),
+          modalTriggers = document.querySelectorAll('[data-modal]'),
+          closeModalBtn = document.querySelector('.modal__close');
+
+    modalTriggers.forEach((btn) => {
+        btn.addEventListener('click', () => {
+            showModal();
+        });
+    });
+
+    closeModalBtn.addEventListener('click', () => {
+        closeModal();
+    });
+
+    modal.addEventListener('click', (e) => {    // закрывает по клику на пространство вокруг модалки
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {       // закрывает по нажатию Esc
+        if (e.key === 'Escape' && modal.classList.contains('show')) {
+            closeModal();
+        }
+    });
+
+    function showModal() {
+        modal.classList.remove('hide');
+        modal.classList.add('show', 'fast_fade');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        modal.classList.remove('show', 'fast_fade');
+        modal.classList.add('hide');
+        document.body.style.overflow = '';
     }
 });
