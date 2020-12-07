@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Timer
 
-    const deadline = '2020-12-01';
+    const deadline = '2020-12-31';
 
     setClock('.timer', deadline);
 
@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
               minutes = timer.querySelector('#minutes'),
               seconds = timer.querySelector('#seconds');
 
-        const timeInterval = setInterval(updateClock, 1000);
+        const updateClockInterval = setInterval(updateClock, 1000);
 
         updateClock();  // вызывается, чтобы таймер сразу обновлялся
 
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const t = getRemainingTime(endTime);
             
             if (t.total <= 0) {
-                clearInterval(timeInterval);
+                clearInterval(updateClockInterval);
                 nullClock();
                 return;
             }
@@ -110,7 +110,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const modal = document.querySelector('.modal'),
           modalTriggers = document.querySelectorAll('[data-modal]'),
-          closeModalBtn = document.querySelector('.modal__close');
+          closeModalBtn = document.querySelector('.modal__close'),
+          modalTimerId = setTimeout(showModal, 5000);      // показывает окно через 5 секунд
 
     modalTriggers.forEach((btn) => {
         btn.addEventListener('click', () => {
@@ -128,16 +129,31 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    document.addEventListener('keydown', (e) => {       // закрывает по нажатию Esc
+    document.addEventListener('keydown', (e) => {       // закрывает по нажатию на Esc
         if (e.key === 'Escape' && modal.classList.contains('show')) {
             closeModal();
         }
     });
 
+    document.addEventListener('scroll', showModalByScroll);      // показывает окно при прокрутке до конца страницы
+
     function showModal() {
         modal.classList.remove('hide');
         modal.classList.add('show', 'fast_fade');
         document.body.style.overflow = 'hidden';
+
+        // если пользователь уже открыл окно сам, не показывать еще раз
+        clearTimeout(modalTimerId);
+        document.removeEventListener('scroll', showModalByScroll);
+    }
+
+    function showModalByScroll() {   
+        const elem = document.documentElement;
+
+        if (elem.scrollHeight - elem.scrollTop <= elem.clientHeight) {
+            showModal();
+            document.removeEventListener('scroll', showModalByScroll);
+        }
     }
 
     function closeModal() {
