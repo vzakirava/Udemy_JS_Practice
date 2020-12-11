@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.addEventListener('scroll', showModalByScroll);      // показывает окно при прокрутке до конца страницы
 
-    //const modalTimerId = setTimeout(showModal, 5000);      // показывает окно через 5 секунд
+    const modalTimerId = setTimeout(showModal, 5000);      // показывает окно через 5 секунд
 
     function showModal() {
         modal.classList.remove('hide');
@@ -173,7 +173,15 @@ document.addEventListener('DOMContentLoaded', () => {
             this.price = price;
             this.imgSrc = imgSrc;
             this.imgAlt = imgAlt;
+
             this.parent = document.querySelector(`${parentSelector}`);
+
+            this.currency = 23;     // обменный курс
+            this.changePriceToUAH();
+        }
+
+        changePriceToUAH() {
+            this.price = this.price * this.currency;
         }
 
         render() {
@@ -199,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
         "vegy",
         'Фитнес',
         'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
-        229,
+        10,
         '.menu .container'
     ).render();
 
@@ -208,7 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
         "elite",
         'Премиум',
         'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!',
-        550,
+        25,
         '.menu .container'
     ).render();
 
@@ -217,7 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
         "post",
         'Постное',
         'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.',
-        430,
+        21,
         '.menu .container'
     ).render();
 });
