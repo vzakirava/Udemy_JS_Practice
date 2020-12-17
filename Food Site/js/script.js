@@ -1,6 +1,8 @@
+'use strict';
+
 document.addEventListener('DOMContentLoaded', () => {
     // Tabs
-    
+
     const tabs = document.querySelectorAll('.tabheader__item'),
           tabsContent = document.querySelectorAll('.tabcontent'),
           tabContainer = document.querySelector('.tabcontainer');
@@ -28,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     tabContainer.addEventListener('click', (event) => {
         const target = event.target;
-        
+
         if (target && target.classList.contains('tabheader__item')) {
             tabs.forEach((tab, i) => {
                 if (target == tab) {
@@ -47,12 +49,12 @@ document.addEventListener('DOMContentLoaded', () => {
     setClock('.timer', deadline);
 
     function getRemainingTime(endTime) {
-        
+
         const t = Date.parse(endTime) - Date.parse(new Date()),
               days = Math.floor(t / (1000 * 60 * 60 * 24)),     // t / мс в одном дне
               hours = Math.floor((t / (1000 * 60 * 60)) % 24),
               minutes = Math.floor((t / (1000 * 60)) % 60),
-              seconds = Math.floor((t / 1000) % 60); 
+              seconds = Math.floor((t / 1000) % 60);
 
         return {
             'total' : t,
@@ -84,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         function updateClock() {
             const t = getRemainingTime(endTime);
-            
+
             if (t.total <= 0) {
                 clearInterval(updateClockInterval);
                 nullClock();
@@ -148,7 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.removeEventListener('scroll', showModalByScroll);
     }
 
-    function showModalByScroll() {   
+    function showModalByScroll() {
         const elem = document.documentElement;
 
         if (elem.scrollHeight - elem.scrollTop <= elem.clientHeight) {
@@ -167,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Menu cards
 
     class MenuItem {
-        constructor (imgSrc, imgAlt, name, description, price, parentSelector) {
+        constructor (imgSrc, imgAlt, name, description, price, parentSelector, ...classes) {
             this.name = name;
             this.description = description;
             this.price = price;
@@ -175,6 +177,8 @@ document.addEventListener('DOMContentLoaded', () => {
             this.imgAlt = imgAlt;
 
             this.parent = document.querySelector(`${parentSelector}`);
+
+            this.classes = classes;
 
             this.currency = 23;     // обменный курс
             this.changePriceToUAH();
@@ -186,8 +190,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         render() {
             const card = document.createElement('div');
+
+            if (this.classes.length === 0) {
+                this.classes = ['menu__item'];
+            }
+
+            this.classes.forEach(className => {
+                card.classList.add(className);
+            });
+
             card.innerHTML = `
-            <div class="menu__item">
                 <img src=${this.imgSrc} alt=${this.imgAlt}>
                 <h3 class="menu__item-subtitle">Меню “${this.name}”</h3>
                 <div class="menu__item-descr">${this.description}</div>
@@ -195,8 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="menu__item-price">
                     <div class="menu__item-cost">Цена:</div>
                     <div class="menu__item-total"><span>${this.price}</span> грн/день</div>
-                </div>
-            </div>`;
+                </div>`;
 
             this.parent.append(card);
         }
@@ -217,7 +228,8 @@ document.addEventListener('DOMContentLoaded', () => {
         'Премиум',
         'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!',
         25,
-        '.menu .container'
+        '.menu .container',
+        'menu__item'
     ).render();
 
     new MenuItem(
@@ -226,6 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'Постное',
         'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.',
         21,
-        '.menu .container'
+        '.menu .container',
+        'menu__item'
     ).render();
 });
