@@ -241,4 +241,65 @@ document.addEventListener('DOMContentLoaded', () => {
         '.menu .container',
         'menu__item'
     ).render();
+
+
+    // Forms
+
+    const forms = document.querySelectorAll('form');
+
+    const messages = {
+        loading: 'Загрузка',
+        success: 'Спасибо! Скоро мы с вами свяжемся',
+        failure: 'Что-то пошло не так'
+    };
+
+    forms.forEach(form => {
+        postData(form);
+    });
+
+    function postData(form) {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const statusMessage = document.createElement('div');
+            statusMessage.classList.add('status');
+            statusMessage.textContent = messages.loading;
+            form.append(statusMessage);
+
+            const request = new XMLHttpRequest();
+            request.open('POST', 'server.php');
+            request.setRequestHeader('Content-type', 'application/json');
+            
+            const formData = new FormData(form);
+
+            request.send(formDataToJSON(formData));
+
+            request.addEventListener('load', () => {
+                if (request.status === 200) {
+                    console.log(request.response);
+                    statusMessage.textContent = messages.success; 
+
+                    form.reset();
+
+                    setTimeout(() => {
+                        statusMessage.remove();    // удаляем сообщение пос
+                    }, 2000);
+                } else {
+                    statusMessage.textContent = messages.failure; 
+                }
+            });
+        });
+    }
+
+    function formDataToJSON(formData) {
+        const obj = {};
+
+        formData.forEach((value, key) => {
+            obj[key] = value;
+        });
+
+        const json = JSON.stringify(obj);
+
+        return json;
+    }
 });
