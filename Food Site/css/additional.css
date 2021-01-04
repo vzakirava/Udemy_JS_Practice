@@ -6,6 +6,11 @@
     display: none;
 }
 
+.spinner {
+    display: block;
+    margin: 0 auto;
+}
+
 .fade {
     animation-name: fade;
     animation-duration: 1.5s;

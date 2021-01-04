@@ -111,8 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Modal
 
     const modal = document.querySelector('.modal'),
-          modalTriggers = document.querySelectorAll('[data-modal]'),
-          closeModalBtn = document.querySelector('.modal__close');
+          modalTriggers = document.querySelectorAll('[data-modal]');
 
     modalTriggers.forEach((btn) => {
         btn.addEventListener('click', () => {
@@ -120,12 +119,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    closeModalBtn.addEventListener('click', () => {
-        closeModal();
-    });
-
-    modal.addEventListener('click', (e) => {    // закрывает по клику на пространство вокруг модалки
-        if (e.target === modal) {
+    modal.addEventListener('click', (e) => {    // закрывает по клику на крестик и на пространство вокруг модалки
+        if (e.target === modal || e.target.getAttribute('data-close') == '') {
             closeModal();
         }
     });
@@ -138,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.addEventListener('scroll', showModalByScroll);      // показывает окно при прокрутке до конца страницы
 
-    const modalTimerId = setTimeout(showModal, 5000);      // показывает окно через 5 секунд
+    const modalTimerId = setTimeout(showModal, 50000);      // показывает окно через 50 секунд
 
     function showModal() {
         modal.classList.remove('hide');
@@ -248,7 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const forms = document.querySelectorAll('form');
 
     const messages = {
-        loading: 'Загрузка',
+        loading: 'img/form/spinner.svg',
         success: 'Спасибо! Скоро мы с вами свяжемся',
         failure: 'Что-то пошло не так'
     };
@@ -261,10 +256,10 @@ document.addEventListener('DOMContentLoaded', () => {
         form.addEventListener('submit', (e) => {
             e.preventDefault();
 
-            const statusMessage = document.createElement('div');
-            statusMessage.classList.add('status');
-            statusMessage.textContent = messages.loading;
-            form.append(statusMessage);
+            const spinner = document.createElement('img');
+            spinner.src = messages.loading;
+            spinner.classList.add('spinner');
+            form.insertAdjacentElement('afterend', spinner);
 
             const request = new XMLHttpRequest();
             request.open('POST', 'server.php');
@@ -277,18 +272,41 @@ document.addEventListener('DOMContentLoaded', () => {
             request.addEventListener('load', () => {
                 if (request.status === 200) {
                     console.log(request.response);
-                    statusMessage.textContent = messages.success; 
+                    showResponseModal(messages.success); 
 
                     form.reset();
 
-                    setTimeout(() => {
-                        statusMessage.remove();    // удаляем сообщение пос
-                    }, 2000);
+                    spinner.remove();    // удаляем спиннер
                 } else {
-                    statusMessage.textContent = messages.failure; 
+                    showResponseModal(messages.failure); 
                 }
             });
         });
+    }
+
+    function showResponseModal(message) {
+        const prevModalDialog = document.querySelector('.modal__dialog');
+
+        prevModalDialog.classList.add('hide');
+        showModal();
+
+        const responseModal = document.createElement('div');
+        responseModal.classList.add('modal__dialog');
+        responseModal.innerHTML = `
+        <div class="modal__content">
+            <div class="modal__close" data-close>×</div>
+            <div class="modal__title">${message}</div>
+        </div>
+        `;
+
+        document.querySelector('.modal').append(responseModal);
+
+        setTimeout(() => {
+            closeModal();
+            responseModal.remove();
+            prevModalDialog.classList.add('show');
+            prevModalDialog.classList.remove('hide');
+        }, 4000);
     }
 
     function formDataToJSON(formData) {
