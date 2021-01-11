@@ -259,27 +259,29 @@ document.addEventListener('DOMContentLoaded', () => {
             const spinner = document.createElement('img');
             spinner.src = messages.loading;
             spinner.classList.add('spinner');
-            form.insertAdjacentElement('afterend', spinner);
+            form.insertAdjacentElement('afterend', spinner);    // чтобы спиннер не сдвигал блоки встроенной формы
 
-            const request = new XMLHttpRequest();
-            request.open('POST', 'server.php');
-            request.setRequestHeader('Content-type', 'application/json');
-            
             const formData = new FormData(form);
 
-            request.send(formDataToJSON(formData));
+            fetch('server.php', {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: formDataToJSON(formData)
+            })
+            .then(response => response.text())
+            .then(response => {
+                console.log(response);
+                showResponseModal(messages.success); 
 
-            request.addEventListener('load', () => {
-                if (request.status === 200) {
-                    console.log(request.response);
-                    showResponseModal(messages.success); 
-
-                    form.reset();
-
-                    spinner.remove();    // удаляем спиннер
-                } else {
-                    showResponseModal(messages.failure); 
-                }
+                spinner.remove();    // удаляем спиннер
+            })
+            .catch(() => {
+                showResponseModal(messages.failure);
+            })
+            .finally(() => {
+                form.reset();
             });
         });
     }
