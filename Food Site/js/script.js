@@ -208,34 +208,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    new MenuItem(
-        "img/tabs/vegy.jpg",
-        "vegy",
-        'Фитнес',
-        'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
-        10,
-        '.menu .container'
-    ).render();
+    const getResources = async (url) => {
+        const result = await fetch(url);
 
-    new MenuItem(
-        "img/tabs/elite.jpg",
-        "elite",
-        'Премиум',
-        'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!',
-        25,
-        '.menu .container',
-        'menu__item'
-    ).render();
+        if (!result.ok) {
+            throw new Error(`Could not fetch ${url}, status: ${result.status}`);
+        }
 
-    new MenuItem(
-        "img/tabs/post.jpg",
-        "post",
-        'Постное',
-        'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.',
-        21,
-        '.menu .container',
-        'menu__item'
-    ).render();
+        return await result.json();
+    };
+
+    getResources('http://localhost:3000/menu')
+        .then(data => {
+            data.forEach(({img, altimg, title, descr, price}) => {
+                new MenuItem(img, altimg, title, descr, price, 
+                    '.menu .container', 'menu__item').render();
+            });
+        });
 
 
     // Forms
@@ -249,10 +238,22 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     forms.forEach(form => {
-        postData(form);
+        bindPostData(form);
     });
 
-    function postData(form) {
+    const postData = async (url, data) => {
+        const result = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: data
+        });
+
+        return await result.json();
+    };
+
+    function bindPostData(form) {
         form.addEventListener('submit', (e) => {
             e.preventDefault();
 
@@ -263,26 +264,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const formData = new FormData(form);
 
-            fetch('server.php', {
-                method: 'POST',
-                headers: {
-                    'Content-type': 'application/json'
-                },
-                body: formDataToJSON(formData)
-            })
-            .then(response => response.text())
-            .then(response => {
-                console.log(response);
-                showResponseModal(messages.success); 
+            postData('http://localhost:3000/requests', formDataToJSON(formData))
+                .then(response => {
+                    console.log(response);
+                    showResponseModal(messages.success); 
 
-                spinner.remove();    // удаляем спиннер
-            })
-            .catch(() => {
-                showResponseModal(messages.failure);
-            })
-            .finally(() => {
-                form.reset();
-            });
+                    
+                })
+                .catch(() => {
+                    showResponseModal(messages.failure);
+                })
+                .finally(() => {
+                    form.reset();
+
+                    spinner.remove();    // удаляем спиннер
+                });
         });
     }
 
@@ -312,14 +308,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function formDataToJSON(formData) {
-        const obj = {};
-
-        formData.forEach((value, key) => {
-            obj[key] = value;
-        });
-
-        const json = JSON.stringify(obj);
-
-        return json;
+        return JSON.stringify(Object.fromEntries(formData.entries()));
     }
 });
