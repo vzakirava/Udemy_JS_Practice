@@ -310,4 +310,54 @@ document.addEventListener('DOMContentLoaded', () => {
     function formDataToJSON(formData) {
         return JSON.stringify(Object.fromEntries(formData.entries()));
     }
+
+
+    // Slider
+
+    const sliderCounter = document.querySelector('.offer__slider-counter'),
+          currSlide = sliderCounter.querySelector('#current'),
+          numberOfSlides = sliderCounter.querySelector('#total');
+
+    const slideWrapper = document.querySelector('.offer__slider-wrapper'),
+          slides = slideWrapper.querySelectorAll('.offer__slide');
+
+    let slideNumber = 1;
+
+    hideSlides();
+    showSlide(slideNumber);
+
+
+    sliderCounter.addEventListener('click', (e => {
+        if (e.target.classList.contains('offer__slider-prev')) {
+            hideSlides();
+            showSlide(slideNumber, -1);
+        } else if (e.target.classList.contains('offer__slider-next')) {
+            hideSlides();
+            showSlide(slideNumber, 1);
+        } else {
+            return;
+        }
+        
+    }));
+
+    function showSlide(i, inc = 0) {
+        slides[i - 1].classList.add('show');
+        slides[i - 1].classList.remove('hide');
+
+        // сменяем нумерацию
+        slideNumber = (slideNumber + inc) > slides.length ? 1 :
+                      (slideNumber + inc) < 1 ? 4 :
+                      (slideNumber + inc);
+
+        currSlide.textContent = `${addZero(slideNumber)}`;
+        numberOfSlides.textContent = `${addZero(slides.length)}`;
+    }
+
+    function hideSlides() {
+        slides.forEach(slide => {
+            slide.classList.add('hide');
+            slide.classList.remove('show');
+        });
+    }
+
 });
